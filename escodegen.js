@@ -769,10 +769,24 @@
         if (result === undefined) {
             throw new Error('Unknown statement type: ' + stmt.type);
         }
+        if (stmt.comments) {
+          for (i = 0; i < stmt.comments.length; ++i) {
+            result = generateComment(stmt.comments[i]) + base + result;
+          }
+        }
         return result;
     }
 
-    function generate(node, options) {
+    function generateComment(comment) {
+      if (comment.type == 'Block') {
+        return '/*' + comment.value + '*/\n';
+      } else if (comment.type == 'Line') {
+        return '//'+comment.value+'\n';
+      }
+      throw new Error('Unknown comment type: ' + comment.type);
+   }
+
+   function generate(node, options) {
         if (typeof options !== 'undefined') {
             base = options.base || '';
             indent = options.indent || '    ';
